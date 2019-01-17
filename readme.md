@@ -1,7 +1,7 @@
 
 ## Status
 
-This project is a partial fork from [Henry Zhang's](https://github.com/hainingzhang/) [Fabric_on_K8s](https://github.com/hainingzhang/articles/tree/master/fabric_on_kubernetes/Fabric-on-K8S/setupCluster) procject, that has been optimized to deploy [Hyperledger Fabric](https://github.com/hyperledger/fabric) to Microsoft's [Azure Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/)
+This project is a partial fork from [Henry Zhang's](https://github.com/hainingzhang/) [Fabric_on_K8s](https://github.com/hainingzhang/articles/tree/master/fabric_on_kubernetes/Fabric-on-K8S/setupCluster) project, that has been optimized to deploy [Hyperledger Fabric](https://github.com/hyperledger/fabric) to Microsoft's [Azure Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/)
 
 Deployment Guide developed from Henry's excellent article series [located here](https://hackernoon.com/how-to-deploy-hyperledger-fabric-on-kubernetes-1-a2ceb3ada078).
 
@@ -18,7 +18,7 @@ distinguishing it from alternative blockchain solutions. Planning for the
 future of enterprise blockchain requires building on top of a fully-vetted,
 open source architecture; Hyperledger Fabric is your starting point.
 
-##Requirements
+## Requirements
 
 [Azure Subscription](https://portal.azure.com) with access to deploy a Storage Account, AKS, and if using VNET, rights to create a VNET or use a subnet with an existing VNET.
 
@@ -82,7 +82,7 @@ This will generate yaml template artifacts that we can use to deploy to our Kube
 
 Run run.py to deploy the configured 
 ```
-    python3.5 .transform/run.py
+    python3.5 ./transform/run.py
 ```
 
 Check your running config
