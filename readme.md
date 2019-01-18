@@ -57,11 +57,6 @@ Install the kubectl app on your system if it's not already installed.
     az aks install-cli
 ```
 
-Download the kubectl credentials
-```
-    az aks get-credentials
-```
-
 Check access to your cluster
 ```
     kubectl get namespaces
