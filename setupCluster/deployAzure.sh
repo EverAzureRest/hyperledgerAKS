@@ -13,6 +13,8 @@ export ARTIFACTS_SHARE_NAME=channel-artifacts
 #export SUBNET_NAME=
 #optional and only used if deploying into an existing VNET
 #export VNET_NAME=
+#export SERVICE_PRINCIPAL_ID=
+#export SERVICE_PRINCIPAL_KEY=
 
 buildRG () {
     az group create -n $RESOURCE_GROUP_NAME -l $DEPLOYMENT_REGION
