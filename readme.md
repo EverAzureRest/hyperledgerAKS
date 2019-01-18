@@ -40,6 +40,11 @@ Create an Azure Subscription if you don't have one.  Link above will allow signu
 
 Install the prerequesites per their documentation
 
+Change into the setupCluster directory - everything will be sourced from that dir. 
+```
+    cd ./setupCluster
+```
+
 Log into Azure with Azure-CLI:
 ```
     az login 
@@ -75,7 +80,7 @@ Run generateAll.sh
 ```
 This will generate yaml template artifacts that we can use to deploy to our Kubernetes cluster along with ca and msp keys.  It will also uplaod these files to your Azure Storage Files shares.   It uses logic from cluster-config.yaml to build a 2 org blockchain network with a single orderer organization.  If you want to add/extend the number of organizations, modify cluster-config.yaml according to Harry's documentation listed above. 
 
-Run run.py to deploy the configured 
+Run run.py to deploy the configured yaml files to Kubernetes.
 ```
     python3.5 ./transform/run.py
 ```
