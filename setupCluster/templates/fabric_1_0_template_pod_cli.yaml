@@ -3,10 +3,10 @@ kind: PersistentVolume
 metadata:
     name: $artifactsName
 spec:
-    capacity:
-       storage: 500Mi
-    accessModes:
-       - ReadWriteMany
+  capacity:
+      storage: 500Mi
+  accessModes:
+      - ReadWriteMany
   storageClassName: azurefile
   persistentVolumeReclaimPolicy: Retain
   azureFile:
