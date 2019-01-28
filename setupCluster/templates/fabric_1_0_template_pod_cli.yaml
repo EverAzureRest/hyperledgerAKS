@@ -4,9 +4,9 @@ metadata:
     name: $artifactsName
 spec:
   capacity:
-      storage: 500Mi
+    storage: 500Mi
   accessModes:
-      - ReadWriteMany
+    - ReadWriteMany
   storageClassName: azurefile
   persistentVolumeReclaimPolicy: Retain
   azureFile:
@@ -16,7 +16,24 @@ spec:
     secretNamespace: default
 
 ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: hlfsource
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  persistentVolumeReclaimPolicy: Retain
+  azureFile:
+    secretName: azure-secret
+    shareName: fabric
+    readOnly: false
+    secretNamespace: default
 
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -30,9 +47,24 @@ spec:
    resources:
       requests:
         storage: 100Mi
-
 ---
 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    namespace: org1
+    name: hlfsource-pvc
+spec:
+   accessModes:
+     - ReadWriteMany
+   storageClassName: azurefile
+   volumeName: hlfsource
+   resources:
+      requests:
+        storage: 100Mi
+
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -48,7 +80,7 @@ spec:
     spec:
       containers:
         - name: $name
-          image:  hyperledger/fabric-tools:x86_64-1.0.0
+          image:  hyperledger/fabric-tools:latest
           env:
           
           - name: CORE_PEER_TLS_ENABLED
@@ -90,6 +122,8 @@ spec:
              subPath: $mspPath
            - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
              name: artifacts
+           - mountPath: /opt/gopath/src/github.com/hyperledger/fabric
+             name: hlfsource
       volumes:
         - name: certificate
           persistentVolumeClaim:
@@ -97,6 +131,9 @@ spec:
         - name: artifacts
           persistentVolumeClaim:
               claimName: $artifactsName
+        - name: hlfsource
+          persistentVolumeClaim:
+              claimName: hlfsource-pvc
         - name: run
           hostPath:
             path: /var/run 
