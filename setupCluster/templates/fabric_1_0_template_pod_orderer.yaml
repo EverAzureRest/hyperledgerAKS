@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: $podName
-        image: hyperledger/fabric-orderer:x86_64-1.0.0
+        image: hyperledger/fabric-orderer:1.4.0
         env:
         - name: ORDERER_GENERAL_LOGLEVEL
           value: debug

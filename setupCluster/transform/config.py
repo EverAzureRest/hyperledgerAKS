@@ -6,6 +6,7 @@ import os
 TestDir = './dest/'
 PORTSTARTFROM = 30000
 GAP = 100  #interval for worker's port
+#VERSION =  #HyperLedger Version to deploy - default 1.0.0
 
 def render(src, dest, **kw):
 	t = Template(open(src, 'r').read())
@@ -28,6 +29,7 @@ def configORGS(name, path): # name means if of org, path describe where is the n
 	namespaceTemplate = getTemplate("fabric_1_0_template_pod_namespace.yaml")
 	render(namespaceTemplate, path + "/" + name + "-namespace.yaml", org = name,
 	pvName = name + "-pv",
+	sourcePVName = name + "-sourcepvc",
 	path = path.replace("transform/../", "./opt/share/")
 	)
 
@@ -45,6 +47,7 @@ def configORGS(name, path): # name means if of org, path describe where is the n
                 artifactsName = name + "-artifacts-pv",
 		peerAddress = "peer0." + name + ":7051",
 		mspid = name.split('-')[0].capitalize()+"MSP",
+		sourcePVName = name + "-sourcepvc"
 		)
 		#######
 
@@ -73,7 +76,7 @@ def configORGS(name, path): # name means if of org, path describe where is the n
 		tlsKey = tlsKeyTemplate.format(skFile),	
 		tlsCert = tlsCertTemplate.format("ca."+name),
 		nodePort = exposedPort,
-		pvName = name + "-pv" 
+		pvName = name + "-pv"
 		)
 		#######
 
@@ -115,7 +118,8 @@ def configPEERS(name, path): # name means peerid.
 	tlsPath = tlsPathTemplate.format(name),
 	nodePort1 = exposedPort1,
 	nodePort2 = exposedPort2,
-        pvName = orgName + "-pv"
+        pvName = orgName + "-pv",
+		sourcePVName = orgName + "-sourcepvc"
 	)
 
 

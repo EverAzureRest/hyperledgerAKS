@@ -32,6 +32,40 @@ spec:
 
 ---
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: $sourcePVName
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  persistentVolumeReclaimPolicy: Retain
+  azureFile:
+    secretName: azure-secret
+    shareName: fabric
+    readOnly: false
+    secretNamespace: default
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    namespace: $org
+    name: $sourcePVName
+spec:
+   accessModes:
+     - ReadWriteMany
+   storageClassName: azurefile
+   volumeName: $sourcePVName
+   resources:
+      requests:
+        storage: 100Mi
+
+
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
  namespace: $org

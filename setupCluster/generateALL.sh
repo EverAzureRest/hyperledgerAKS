@@ -6,7 +6,7 @@ CHANNEL_NAME=$1
 export TOOLS=$PWD/../bin
 export CONFIG_PATH=$PWD
 export FABRIC_CFG_PATH=$PWD
-export STORAGE_ACCT_NAME=CHANGEME
+export STORAGE_ACCT_NAME=aksblockchaintes
 export STORAGE_KEY=$(az storage account keys list --account-name $STORAGE_ACCT_NAME -o json --query [1].value | tr -d '"')
 export ORG1_SHARE_NAME=org1
 export ORG2_SHARE_NAME=org2
@@ -14,7 +14,7 @@ export ORDERORG_SHARE_NAME=orgorderer1
 export ARTIFACTS_SHARE_NAME=channel-artifacts
 
 ## Generates Org certs
-function generateCerts (){
+function generateCerts(){
 	CRYPTOGEN=$TOOLS/cryptogen
 
 	$CRYPTOGEN generate --config=./cluster-config.yaml	
@@ -39,11 +39,15 @@ function generateChannelArtifacts() {
 
 	cp ./channel-artifacts/genesis.block ./crypto-config/ordererOrganizations/*
 
+	if [ ! -d ./opt ]; then
+		mkdir ./opt && mkdir ./opt/share
+	fi
+
 	cp -r ./crypto-config ./opt/share/ && cp -r ./channel-artifacts ./opt/share/
 	
-	az storage file upload-batch -s ./opt/share/crypto-config/ordererOrganizations/orgorderer1/ -d $ORDERORG_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
-	az storage file upload-batch -s ./opt/share/crypto-config/peerOrganizations/org1 -d $ORG1_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
-	az storage file upload-batch -s ./opt/share/crypto-config/peerOrganizations/org2 -d $ORG2_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
+	az storage file upload-batch -s ./opt/share/ordererOrganizations/orgorderer1/ -d $ORDERORG_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
+	az storage file upload-batch -s ./opt/share/peerOrganizations/org1 -d $ORG1_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
+	az storage file upload-batch -s ./opt/share/peerOrganizations/org2 -d $ORG2_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
 	
 	az storage file upload -s $ARTIFACTS_SHARE_NAME --source ./channel-artifacts/genesis.block --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY
 
@@ -51,12 +55,12 @@ function generateChannelArtifacts() {
 	#Files are then copied to two Azure shares
 }
 
-function generateK8sYaml (){
+function generateK8sYaml() {
 	python3.5 transform/generate.py
 }
 
-function clean () {
-	rm -rf ./opt/share/crypto-config/*
+function clean() {
+	rm -rf ./opt/*
 	rm -rf crypto-config
 }
 

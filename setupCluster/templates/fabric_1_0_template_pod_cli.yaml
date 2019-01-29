@@ -17,24 +17,6 @@ spec:
 
 ---
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-    name: hlfsource
-spec:
-  capacity:
-    storage: 500Mi
-  accessModes:
-    - ReadWriteMany
-  storageClassName: azurefile
-  persistentVolumeReclaimPolicy: Retain
-  azureFile:
-    secretName: azure-secret
-    shareName: fabric
-    readOnly: false
-    secretNamespace: default
-
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
     namespace: $namespace
@@ -44,22 +26,6 @@ spec:
      - ReadWriteMany
    storageClassName: azurefile
    volumeName: $artifactsName
-   resources:
-      requests:
-        storage: 100Mi
----
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-    namespace: org1
-    name: hlfsource-pvc
-spec:
-   accessModes:
-     - ReadWriteMany
-   storageClassName: azurefile
-   volumeName: hlfsource
    resources:
       requests:
         storage: 100Mi
@@ -80,7 +46,7 @@ spec:
     spec:
       containers:
         - name: $name
-          image:  hyperledger/fabric-tools:latest
+          image:  hyperledger/fabric-tools:1.4.0
           env:
           
           - name: CORE_PEER_TLS_ENABLED
@@ -133,7 +99,7 @@ spec:
               claimName: $artifactsName
         - name: hlfsource
           persistentVolumeClaim:
-              claimName: hlfsource-pvc
+              claimName: $sourcePVName
         - name: run
           hostPath:
             path: /var/run 
