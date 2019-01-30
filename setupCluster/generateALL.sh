@@ -12,9 +12,17 @@ export ORG1_SHARE_NAME=org1
 export ORG2_SHARE_NAME=org2
 export ORDERORG_SHARE_NAME=orgorderer1
 export ARTIFACTS_SHARE_NAME=channel-artifacts
+export HLFVER=1.4.0
 
 ## Generates Org certs
 function generateCerts(){
+	if [ ! -d $TOOLS ]; then
+	mkdir $TOOLS && 
+	curl https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.4.0/hyperledger-fabric-linux-amd64-1.4.0.tar.gz | tar xz -C ../
+	chmod -R 777 $TOOLS
+	fi
+	sleep 5
+
 	CRYPTOGEN=$TOOLS/cryptogen
 
 	$CRYPTOGEN generate --config=./cluster-config.yaml	
@@ -26,6 +34,10 @@ function generateChannelArtifacts() {
 	if [ ! -d channel-artifacts ]; then
 		mkdir channel-artifacts
 	fi
+	if [ ! -d crypto-config ]; then
+		mkdir crypto-config
+	fi 
+
 
 
 	CONFIGTXGEN=$TOOLS/configtxgen
@@ -45,9 +57,9 @@ function generateChannelArtifacts() {
 
 	cp -r ./crypto-config ./opt/share/ && cp -r ./channel-artifacts ./opt/share/
 	
-	az storage file upload-batch -s ./opt/share/ordererOrganizations/orgorderer1/ -d $ORDERORG_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
-	az storage file upload-batch -s ./opt/share/peerOrganizations/org1 -d $ORG1_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
-	az storage file upload-batch -s ./opt/share/peerOrganizations/org2 -d $ORG2_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
+	az storage file upload-batch -s ./opt/share/crypto-config/ordererOrganizations/orgorderer1/ -d $ORDERORG_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
+	az storage file upload-batch -s ./opt/share/crypto-config/peerOrganizations/org1 -d $ORG1_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
+	az storage file upload-batch -s ./opt/share/crypto-config/peerOrganizations/org2 -d $ORG2_SHARE_NAME --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY --max-connections 50
 	
 	az storage file upload -s $ARTIFACTS_SHARE_NAME --source ./channel-artifacts/genesis.block --account-name $STORAGE_ACCT_NAME --account-key $STORAGE_KEY
 
@@ -56,12 +68,13 @@ function generateChannelArtifacts() {
 }
 
 function generateK8sYaml() {
-	python3.5 transform/generate.py
+	python3 transform/generate.py
 }
 
 function clean() {
-	rm -rf ./opt/*
+	rm -rf ./opt
 	rm -rf crypto-config
+	#rm -rf $TOOLS
 }
 
 

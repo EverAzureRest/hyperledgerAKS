@@ -76,15 +76,10 @@ spec:
            subPath: $tlsPath
          - mountPath: /host/var/run/
            name: run
-         - mountPath: /opt/gopath/src/github.com/hyperledger/fabric
-           name: hlfsource
       volumes:
        - name: certificate
          persistentVolumeClaim:
             claimName: $pvName
-       - name: hlfsource
-         persistentVolumeClaim:
-            claimName: $sourcePVName
        - name: run
          hostPath:
            path: /run
